@@ -1,0 +1,77 @@
+$font-stack:    Helvetica, sans-serif;
+
+$background: #282c34;
+$dark-background: #111;
+$red: #FF4136;
+$orange: #FF851B;
+$yellow: #FFDC00;
+$blue: #0074D9;
+$navy: #001f3f;
+$lime: #01FF70;
+$green: #2ECC40;
+
+body {
+  font: 100% $font-stack;
+  background-color: $background;
+  color: $red;
+}
+
+.cat-card{
+  background-color: $background;
+  margin: 10px;
+
+  .header{
+    font-size: x-large;
+    color: $lime;
+    font-weight: bold;
+    border: 2px solid $lime;
+    border-radius: 15px;
+    padding: 5px 0px;
+  }
+  .body{
+    font-size: normal;
+    color: $blue;
+    border: 2px solid $lime;
+    padding: 10px;
+  }
+  .footer{
+    font-size: small;
+  }
+  .button-bar{
+
+    border: 2px transparent #FFDC00;
+    border-radius: 4px;
+
+    .bb-item{
+      //margin: 0px 5px;
+    }
+
+  }
+
+}
+
+.break{
+  flex-basis: 100%;
+  height: 0;
+}
+
+.master-container{
+  font-family: $font-stack;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+
+}
+.gutter{
+  width: 15%;
+  max-width: 15%;
+  height: 100%;
+  flex: none;
+  border: 1px solid $yellow;
+  color: $yellow;
+}
+.cat-container{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}

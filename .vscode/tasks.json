@@ -1,0 +1,15 @@
+// Sass configuration
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Sass Compile CatSim",
+        "type": "shell",
+        "command": "node-sass C:\\Users\\sac\\my-first-app\\src\\CatSim.scss C:\\Users\\sac\\my-first-app\\src\\CatSim.css",
+        "group": "build",
+        "problemMatcher": []
+      }
+    ]
+  }

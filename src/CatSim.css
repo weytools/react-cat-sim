@@ -1,0 +1,16 @@
+body {
+  font: 100% Helvetica, sans-serif;
+  color: #FF4136; }
+
+cat-card {
+  background-color: #111111; }
+  cat-card header {
+    font-size: x-large;
+    color: #01FF70;
+    font-weight: bold;
+    border: 2px solid #01FF70;
+    border-radius: 15px; }
+  cat-card body {
+    font-size: normal;
+    color: #0074D9;
+    border: 2px solid #01FF70; }
