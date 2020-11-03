@@ -1,6 +1,6 @@
 # A cat simulator
-Most of my React components and logic are stored in [CatSim.js](react-cat-sim/src/CatSim.js)  
-My styling is done in Sass and compiled at build time, viewable in [CatSim.scss](react-cat-sim/src/CatSim.scss)
+Most of my React components and logic are stored in [CatSim.js](src/CatSim.js)  
+My styling is done in Sass and compiled at build time, viewable in [CatSim.scss](src/CatSim.scss)
 
 ## The Cats
 Cat objects that have consistently decrementing needs that can be interacted with  
