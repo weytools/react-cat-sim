@@ -22,16 +22,22 @@ body {
 
   .header{
     font-size: x-large;
-    color: $lime;
+    color: $yellow;
     font-weight: bold;
     border: 2px solid $lime;
-    border-radius: 15px;
+    border-radius: 5px;
     padding: 5px 0px;
+  }
+  .cat-pic {
+    object-fit: cover;
+    border: 2px solid $yellow;
+    border-radius: 15px;
   }
   .body{
     font-size: normal;
     color: $blue;
     border: 2px solid $lime;
+    border-radius: 5px;
     padding: 10px;
   }
   .footer{
@@ -65,9 +71,9 @@ body {
 .gutter{
   width: 15%;
   max-width: 15%;
-  height: 100%;
+  height: auto;
   flex: none;
-  border: 1px solid $yellow;
+  border: 1px transparent $yellow;
   color: $yellow;
 }
 .cat-container{

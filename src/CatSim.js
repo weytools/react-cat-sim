@@ -14,7 +14,8 @@ export class Main extends React.Component {
                         hunger: 5,  
                         love: 6
                     },
-                    notes: ''
+                    notes: '',
+                    imageURL: 'https://cdn2.thecatapi.com/images/b32.jpg'
                 }, 
                 {
                     name: 'Xander', 
@@ -22,7 +23,8 @@ export class Main extends React.Component {
                         hunger: 2,  
                         love: 2
                     },
-                    notes: ''
+                    notes: '',
+                    imageURL: 'https://cdn2.thecatapi.com/images/47e.jpg'
                 }, 
                 {
                     name: 'Percy', 
@@ -30,14 +32,64 @@ export class Main extends React.Component {
                         hunger: 3,  
                         love: 4
                     },
-                    notes: ''
+                    notes: '',
+                    imageURL: 'https://cdn2.thecatapi.com/images/WhjyBAgFR.jpg'
                 }
             ]
         }
+        // bind functions
         this.feedHandler = this.feedHandler.bind(this);
         this.petHandler = this.petHandler.bind(this);
         this.surrHandler = this.surrHandler.bind(this);
+        // some vars
+        this.decrementInterval = 5000;
+        this.defaultCat = {   
+            name: 'Oliver',    
+            levels: {
+                hunger: 5,  
+                love: 6
+            },
+            notes: '',
+            imageURL: 'https://cdn2.thecatapi.com/images/b32.jpg'
+        }
     }
+
+
+    async newCat(){
+        const workingList = this.state.catList;
+        const newName = this.getNewName();
+        const newLevels = {
+            hunger: 10,
+            love: 10
+        };
+        const newNotes = 'Just adopted!';
+        const newImage  = await this.getNewImage();
+        const newCat = {
+            name: newName,    
+            levels: newLevels,
+            notes: newNotes,
+            imageURL: newImage
+        };
+        workingList.push(newCat);
+        this.setState(
+            { workingList }
+        );
+    };
+
+    getNewName(){
+        // top 100 boys & girl names from ssa.gov
+        let nameList = ["Liam", "Olivia", "Noah", "Emma", "Oliver", "Ava", "William", "Sophia", "Elijah", "Isabella", "James", "Charlotte", "Benjamin", "Amelia", "Lucas", "Mia", "Mason", "Harper", "Ethan", "Evelyn", "Alexander", "Abigail", "Henry", "Emily", "Jacob", "Ella", "Michael", "Elizabeth", "Daniel", "Camila", "Logan", "Luna", "Jackson", "Sofia", "Sebastian", "Avery", "Jack", "Mila", "Aiden", "Aria", "Owen", "Scarlett", "Samuel", "Penelope", "Matthew", "Layla", "Joseph", "Chloe", "Levi", "Victoria", "Mateo", "Madison", "David", "Eleanor", "John", "Grace", "Wyatt", "Nora", "Carter", "Riley", "Julian", "Zoey", "Luke", "Hannah", "Grayson", "Hazel", "Isaac", "Lily", "Jayden", "Ellie", "Theodore", "Violet", "Gabriel", "Lillian", "Anthony", "Zoe", "Dylan", "Stella", "Leo", "Aurora", "Lincoln", "Natalie", "Jaxon", "Emilia", "Asher", "Everly", "Christopher", "Leah", "Josiah", "Aubrey", "Andrew", "Willow", "Thomas", "Addison", "Joshua", "Lucy", "Ezra", "Audrey", "Hudson", "Bella", "Charles", "Nova", "Caleb", "Brooklyn", "Isaiah", "Paisley", "Ryan", "Savannah", "Nathan", "Claire", "Adrian", "Skylar", "Christian", "Isla", "Maverick", "Genesis", "Colton", "Naomi", "Elias", "Elena", "Aaron", "Caroline", "Eli", "Eliana", "Landon", "Anna", "Jonathan", "Maya", "Nolan", "Valentina", "Hunter", "Ruby", "Cameron", "Kennedy", "Connor", "Ivy", "Santiago", "Ariana", "Jeremiah", "Aaliyah", "Ezekiel", "Cora", "Angel", "Madelyn", "Roman", "Alice", "Easton", "Kinsley", "Miles", "Hailey", "Robert", "Gabriella", "Jameson", "Allison", "Nicholas", "Gianna", "Greyson", "Serenity", "Cooper", "Samantha", "Ian", "Sarah", "Carson", "Autumn", "Axel", "Quinn", "Jaxson", "Eva", "Dominic", "Piper", "Leonardo", "Sophie", "Luca", "Sadie", "Austin", "Delilah", "Jordan", "Josephine", "Adam", "Nevaeh", "Xavier", "Adeline", "Jose", "Arya", "Jace", "Emery", "Everett", "Lydia", "Declan", "Clara", "Evan", "Vivian", "Kayden", "Madeline", "Parker", "Peyton", "Wesley", "Julia", "Kai", "Rylee"];
+        let newName = nameList[Math.floor(Math.random() * nameList.length)];
+        return newName;
+    
+    };
+
+    async getNewImage(){
+        let response = await fetch("https://api.thecatapi.com/v1/images/search");
+        let resultString = await response.json();
+        let final = (resultString[0].url);
+        return final;
+    };
 
     feedHandler(index){
         const workingList = this.state.catList;
@@ -76,13 +128,32 @@ export class Main extends React.Component {
         }, 3000);
     }
     surrHandler(index){
-        
+        // get the current list
+        const ogList = this.state.catList;
+        // prompt for confirmation
+        const confReply = this.confirmSurrender(ogList[index].name);
+        // execute
+        let newList;
+        if (confReply == true){
+            newList = ogList.slice(0,index).concat(ogList.slice(index+1, ogList.length));
+        } else {
+            return;
+        }
+        console.log(newList);
+        this.setState( 
+            {catList: newList}
+        );
+        ;        
+    };
+    // return bool
+    confirmSurrender(catName){
+        return window.confirm('Are you sure you want to surrender ' + catName + '?');
     };
 
     // TIMERS
     componentDidMount() {
         this.timerBase = setInterval( () => this.tick(), 1000)
-        this.statTimer = setInterval( () => this.decrementStats(), 3000)
+        this.statTimer = setInterval( () => this.decrementStats(), this.decrementInterval)
     };
     componentWillUnmount(){
         clearInterval(this.timerBase);
@@ -106,7 +177,8 @@ export class Main extends React.Component {
                 hunger: (cat.levels.hunger == 0 ? 0 : (cat.levels.hunger - 1)),
                 love: (cat.levels.hunger == 0 ? 0 : (cat.levels.love - 1))
             },
-            notes: cat.notes
+            notes: cat.notes,
+            imageURL: cat.imageURL
         })
         );
             // let newLevels = cat.levels.map(level => level-1);
@@ -119,10 +191,14 @@ export class Main extends React.Component {
         this.setState( {catList: newList}) ;
     };
 
+
+
     render(){
         const cats = this.state.catList.map((cat, index) => (
             <div className='cat-card' key={index}>
-                <div className='cat-card header font'>{cat.name}</div>
+                <div className='cat-card header font'>{cat.name}<br/>
+                    <img className='cat-pic mb-2' src={cat.imageURL} width='150' height='100' ></img>
+                </div>
                 <div className='cat-card body text-primary text-left'>
                     <div className='stats text-primary'>
                         <CatStat stat='Hunger' level={cat.levels.hunger} />
@@ -141,18 +217,39 @@ export class Main extends React.Component {
                 </div>
             </div>
             )
-        );
-        
-        const timer = <div className="text-warning bg-dark p-2 rounded">Elapsed: {this.state.timerCount}</div>
+        ); 
+        const appInfo = <div class="text-light lead m-4">Cat stats decrement every <span class="text-warning">{this.decrementInterval / 1000}</span> seconds! 
+        <p>Keep your kitties happy!</p></div>
+
+        const actionbarTitle =
+        <div class="w-100 h3 text-light mb-1 ">
+            <p className="mb-0 text-primary"><em>Action Bar</em></p>
+        </div>
+
+        const actionBar = 
+            <div className="
+            rounded border border-primary border-2
+            px-2 text-light
+            d-flex align-items-center">
+                <Button color='success' onClick={ () => this.newCat()}>Adopt New Cat</Button>
+                <div className="bg-primary h-100 pr-1 mx-2"></div>
+                <div className="text-warning bg-dark p-2 rounded my-2">Time Elapsed: {this.state.timerCount}</div>
+                
+            </div>
+
+        // const timer = <div className="text-warning bg-dark p-2 rounded">Elapsed: {this.state.timerCount}</div>
         return (
             <div className='master-container'>
-                <div className='gutter'>gutter</div>
+                <div className='gutter'></div>
                     <div className='cat-container'>
+                        {appInfo}
+                        <div className="break"/>
                         {cats}
                         <div className="break"/>
-                        {timer}
+                        {actionbarTitle}
+                        {actionBar}
                     </div>
-                <div className='gutter'>gutter</div>
+                <div className='gutter'></div>
             </div>);
     }
 
