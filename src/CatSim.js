@@ -7,54 +7,40 @@ export class Main extends React.Component {
         super(props);
         this.state = {
             timerCount: 0,
-            catList: [
-                {   
-                    name: 'Oliver',    
-                    levels: {
-                        hunger: 5,  
-                        love: 6
-                    },
-                    notes: '',
-                    imageURL: 'https://cdn2.thecatapi.com/images/b32.jpg'
-                }, 
-                {
-                    name: 'Xander', 
-                    levels: {
-                        hunger: 2,  
-                        love: 2
-                    },
-                    notes: '',
-                    imageURL: 'https://cdn2.thecatapi.com/images/47e.jpg'
-                }, 
-                {
-                    name: 'Percy', 
-                    levels: {
-                        hunger: 3,  
-                        love: 4
-                    },
-                    notes: '',
-                    imageURL: 'https://cdn2.thecatapi.com/images/WhjyBAgFR.jpg'
-                }
-            ]
+            catList: [ ]
         }
+        // some vars
+        this.decrementInterval = 5000;
+        this.noteCountdownStart = 2;
+
+        // start with 2 new cats
+        this.newCat();
+        this.newCat();
+
         // bind functions
         this.feedHandler = this.feedHandler.bind(this);
         this.petHandler = this.petHandler.bind(this);
         this.surrHandler = this.surrHandler.bind(this);
-        // some vars
-        this.decrementInterval = 5000;
-        this.defaultCat = {   
-            name: 'Oliver',    
-            levels: {
-                hunger: 5,  
-                love: 6
-            },
-            notes: '',
-            imageURL: 'https://cdn2.thecatapi.com/images/b32.jpg'
-        }
+
+        // this.defaultCat = {   
+        //     name: 'Oliver',    
+        //     levels: {
+        //         hunger: 5,  
+        //         love: 6
+        //     },
+        //     notes: [{
+        //         message: "Too many pets!",
+        //         timeout: 3
+        //     },
+        //     {
+        //         message: "I'm hungry!",
+        //         timeout: 2
+        //     }],
+        //     imageURL: 'https://cdn2.thecatapi.com/images/b32.jpg'
+        // }
     }
 
-
+// CREATION FUNCTIONS
     async newCat(){
         const workingList = this.state.catList;
         const newName = this.getNewName();
@@ -62,12 +48,15 @@ export class Main extends React.Component {
             hunger: 10,
             love: 10
         };
-        const newNotes = 'Just adopted!';
+        const newNotes = {
+            message: 'Just adopted!', 
+            timeout: this.noteCountdownStart 
+        };
         const newImage  = await this.getNewImage();
         const newCat = {
             name: newName,    
             levels: newLevels,
-            notes: newNotes,
+            notes: [newNotes],
             imageURL: newImage
         };
         workingList.push(newCat);
@@ -91,23 +80,20 @@ export class Main extends React.Component {
         return final;
     };
 
+    // CAT ACTIONS
     feedHandler(index){
         const workingList = this.state.catList;
-        (workingList[index].levels.hunger == 10 ? this.feedMax(index) : workingList[index].levels.hunger++);
+        (workingList[index].levels.hunger >= 10 ? this.feedMax(index) : workingList[index].levels.hunger++);
         this.setState(
             { workingList }
         );
     };
     feedMax(index){
         const workingList = this.state.catList;
-        workingList[index].notes += "\nI'm too full to eat!";
+        workingList[index].notes.push( { message: "I'm too full to eat!", timeout: this.noteCountdownStart });
         this.setState(
             { workingList }
         );
-        setTimeout(() => {(
-            this.setState((state) => {
-                state.catList[index].notes = ''}));
-        }, 3000);
     }
     petHandler(index){
         const workingList = this.state.catList;
@@ -118,14 +104,10 @@ export class Main extends React.Component {
     };
     petMax(index){
         const workingList = this.state.catList;
-        workingList[index].notes += "\nI'm too loved to be pet!";
+        workingList[index].notes.push ({ message: "I'm too loved to be pet!", timeout: this.noteCountdownStart });
         this.setState(
             { workingList }
         );
-        setTimeout(() => {(
-            this.setState((state) => {
-                state.catList[index].notes = ''}));
-        }, 3000);
     }
     surrHandler(index){
         // get the current list
@@ -158,37 +140,45 @@ export class Main extends React.Component {
     componentWillUnmount(){
         clearInterval(this.timerBase);
     };
-
     tick(){
-        let newCount = 0;
-        this.setState(state => {
-            newCount = state.timerCount;
-            newCount++;
-            return {
-                timerCount: newCount
-            }
-        });
+        this.setState((prevState) => ({ timerCount: prevState.timerCount + 1 }))
     };
 
+    // check each notes timer, decrement and remove expired notes
+    noteTimeout(){
+        let newList = this.state.catList;
+        newList.forEach((cat, catIndex) => {
+            // remove expired notes
+            let filtNotes = cat.notes.filter(note => note.timeout > 0);
+            // decrement timeout
+            filtNotes.forEach(note => note.timeout--);
+            // update newList
+            newList[catIndex].notes = filtNotes;
+            });
+        this.setState( { catList: newList })
+        };
+    
     decrementStats(){
-        let newList = this.state.catList.map( (cat) => ({
-            name: cat.name,
-            levels: {
+        let newList = this.state.catList;
+        newList.forEach( cat => {
+
+            cat.levels = {
                 hunger: (cat.levels.hunger == 0 ? 0 : (cat.levels.hunger - 1)),
                 love: (cat.levels.hunger == 0 ? 0 : (cat.levels.love - 1))
-            },
-            notes: cat.notes,
-            imageURL: cat.imageURL
-        })
-        );
+            };
+        });
+
+        
+        
             // let newLevels = cat.levels.map(level => level-1);
             // return cat.newLevels;
             
             // cat.levels.hunger = cat.levels.hunger - 1;
             // cat.levels.love = cat.levels.love - 1;
 
-            console.log(newList)
+        console.log(newList)
         this.setState( {catList: newList}) ;
+        this.noteTimeout();
     };
 
 
@@ -203,7 +193,7 @@ export class Main extends React.Component {
                     <div className='stats text-primary'>
                         <CatStat stat='Hunger' level={cat.levels.hunger} />
                         <CatStat stat='Love' level={cat.levels.love} />
-                        <CatLert note={cat.notes} />
+                        <CatLert notes={cat.notes} />
                     </div>
                 
                     <div className='cat-card footer text-secondary text-center'>Cat {index+1} out of {this.state.catList.length}</div>
@@ -220,11 +210,6 @@ export class Main extends React.Component {
         ); 
         const appInfo = <div class="text-light lead m-4">Cat stats decrement every <span class="text-warning">{this.decrementInterval / 1000}</span> seconds! 
         <p>Keep your kitties happy!</p></div>
-
-        const actionbarTitle =
-        <div class="w-100 h3 text-light mb-1 ">
-            <p className="mb-0 text-primary"><em>Action Bar</em></p>
-        </div>
 
         const actionBar = 
             <div className="
@@ -244,10 +229,11 @@ export class Main extends React.Component {
                     <div className='cat-container'>
                         {appInfo}
                         <div className="break"/>
+                        {actionBar}
+                        <div className="break"/>
                         {cats}
                         <div className="break"/>
-                        {actionbarTitle}
-                        {actionBar}
+
                     </div>
                 <div className='gutter'></div>
             </div>);
@@ -285,26 +271,16 @@ class CatLert extends React.Component{
         };
     }
     render(){
+        const notesOut = this.props.notes.map( note => ( 
+        <p>{note.message}</p>
+        ));
 
         return(
         <div>
-                {this.props.note}
+                {notesOut}
         </div>
         )
     }
 }
-
-
-
-// const catCardHeader = {
-//     fontSize: 24,
-//     color: 'blue',
-//     fontWeight: 'bold'
-// };
-// const catCardBody = {
-//     fontSize: 12,
-//     color: 'black',
-//     fontWeight: 'normal'
-// };
 
 export default Main;
