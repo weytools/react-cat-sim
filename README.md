@@ -17,8 +17,32 @@ New cats get a random name
 
 New cats get a random cat image
 * Pulled during creation from [TheCatAPI](https://thecatapi.com/) using an async AJAX call
-
-
+  
+## Changelog
+#### v1.2  
+* Added **Persistent cats** 
+  * Cats will persist between sessions  
+  * They are automatically saved to the *localStorage*  
+* Code organization  
+* Fixed issue with hunger levels falling below 0  
+* Layout changes  
+#### v1.1
+* Added **Note timeout** feature 
+  * Each cat has an array of notes, containing a *note* object with *message* and *timeout* keys  
+  * Timeout is decremented each tick until 0, at which point it is removed   
+* Starting cats are now random  
+* Some function refactoring  
+* Formatting and layout changes  
+  
+## To Do  
+* Add spinner graphic to indicate loading  
+  * While the new cat is generated  
+  * While picture is downloaded from API  
+* Cat actions  
+  * Cats will have a chance to perform certain actions, like meowing  
+  * Chance will increase the longer it's been since the last action  
+* Break out more components; refactoring
+  
 ### Other Notes
 React app scaffolding by [Create React App](https://create-react-app.dev/)  
 Styles are the Bootstrap based [reactstrap(https://reactstrap.github.io/)
